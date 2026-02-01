@@ -1,0 +1,107 @@
+Issues
+
+salary = salary;   -  Logical error: Assigns parameter to itself, not the class field.
+
+calculateBonus()  -  Syntax error: Declared as void but tries to return a value.
+
+setSalary()  - OOP principle violation: Negative salary is only printed, but the object state may still remain invalid.
+
+companyName 
+ Encapsulation violation: Public static field; should ideally have getter/setter.
+
+Explanation
+
+salary = salary;	The employee’s salary never actually gets set; logical bug.
+void calculateBonus()	Compiler error because return is used in a void method.
+setSalary only prints warning	Negative salary could still be used; violates data integrity.
+Public static companyName	Poor encapsulation; anyone can change it freely.
+
+
+Corrected Code 
+
+class InvalidSalaryException extends Exception {
+    public InvalidSalaryException(String message) {
+        super(message);
+    }
+}
+
+public class EmployeeManagement {
+
+    private static String companyName;  
+    private String employeeName;
+    private double salary;
+
+    // Constructor
+    public EmployeeManagement(String employeeName) {
+        this.employeeName = employeeName;
+        this.salary = 0; 
+    }
+
+    // Static setter/getter for company name
+    public static void setCompanyName(String name) {
+        companyName = name;
+    }
+
+    public static String getCompanyName() {
+        return companyName;
+    }
+
+    // Setter with validation
+    public void setSalary(double salary) throws InvalidSalaryException {
+        if (salary < 0) {
+            throw new InvalidSalaryException("Salary cannot be negative!");
+        }
+        this.salary = salary;
+    }
+
+    public double getSalary() {
+        return salary;
+    }
+
+    public String getEmployeeName() {
+        return employeeName;
+    }
+
+    // Calculate bonus correctly
+    public double calculateBonus() {
+        return salary * 0.1;
+    }
+
+    // Display employee details
+    public void displayEmployee() {
+        System.out.println("Company: " + companyName);
+        System.out.println("Employee Name: " + employeeName);
+        System.out.println("Salary: " + salary);
+        System.out.println("Bonus: " + calculateBonus());
+    }
+}
+
+
+Demonstrate Usage
+
+public class EmployeeTest {
+    public static void main(String[] args) {
+
+        // company name
+        EmployeeManagement.setCompanyName("moviedrift");
+
+        // Create employee
+        EmployeeManagement emp1 = new EmployeeManagement("Stone");
+
+        try {
+            emp1.setSalary(50000);  // valid salary
+        } catch (InvalidSalaryException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+
+        emp1.displayEmployee();
+
+        // Test negative salary
+        EmployeeManagement emp2 = new EmployeeManagement("stone");
+        try {
+            emp2.setSalary(-1000); // triggers exception
+        } catch (InvalidSalaryException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+}
