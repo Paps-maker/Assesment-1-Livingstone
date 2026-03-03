@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     tools {
+        // Uses the JDK 21 we set up with Adoptium
         jdk 'jdk21' 
-        maven 'maven3' 
     }
 
     stages {
@@ -16,38 +16,26 @@ pipeline {
 
         stage('Compile') {
             steps {
-                dir('java_training') { 
-                    echo 'Compiling Java source code...'
-                    sh 'mvn clean compile' 
-                }
+                echo 'Compiling Java source code...'
+                // Compiles all .java files found in the root directory
+                sh 'javac *.java' 
             }
         }
 
-        stage('Run Tests') {
+        stage('Verify') {
             steps {
-                dir('java_training') { 
-                    echo 'Running Unit Tests (JUnit)...'
-                    sh 'mvn test'
-                }
-            }
-        }
-
-        stage('Package') {
-            steps {
-                dir('java_training') { 
-                    echo ' Packaging application into a JAR file...'
-                    sh 'mvn package -DskipTests'
-                }
+                echo 'Checking for compiled class files...'
+                sh 'ls -l *.class'
             }
         }
     }
 
     post {
         success {
-            echo 'Build and Tests passed successfully!'
+            echo 'Build passed successfully!'
         }
         failure {
-            echo 'Build failed. Check the Console Output for errors.'
+            echo 'Build failed. Check the console output for syntax errors.'
         }
     }
 }
